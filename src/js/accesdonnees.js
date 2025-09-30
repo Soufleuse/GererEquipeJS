@@ -4,6 +4,7 @@ let toutesLesDivisions = [];
 let equipesAffichees = [];
 let currentPage = 1;
 const itemsPerPage = 10;
+const apiBaseUrl = "http://localhost:5246/api/";
 
 // Vos fonctions d'accès aux données existantes
 async function getEquipe(id) {
@@ -11,7 +12,7 @@ async function getEquipe(id) {
         return "";
     }
     
-    const url = "http://localhost:5245/api/equipe/" + id;
+    const url = `${apiBaseUrl}equipe/` + id;
     let json = "";
     try {
         const response = await fetch(url);
@@ -26,8 +27,31 @@ async function getEquipe(id) {
     return json;
 }
 
+async function ObtenirListeEquipe() {
+    console.log("Entrée dans ObtenirListeEquipe");
+
+    const url = `${apiBaseUrl}equipe/`;
+    let json = "";
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Statut de la réponse : ${response.status}`);
+        }
+
+        json = await response.json();
+        console.log(json);
+    }
+    catch (error) {
+        console.error(error.message);
+    }
+    
+    console.log("Sortie de ObtenirListeEquipe");
+
+    return json;
+}
+
 async function getListeEquipe() {
-    const url = "http://localhost:5245/api/equipe/";
+    const url = `${apiBaseUrl}equipe/`;
     let json = "";
     try {
         const response = await fetch(url);
@@ -44,7 +68,9 @@ async function getListeEquipe() {
 }
 
 async function majEquipe(entree) {
-    const url = "http://localhost:5245/api/equipe/" + entree.id;
+    console.log('Entrée majEquipe : ', entree);
+
+    const url = `${apiBaseUrl}equipe/` + entree.id;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('accept', '*/*');
@@ -70,8 +96,29 @@ async function majEquipe(entree) {
     }
 }
 
+async function getDernierNumeroEquipe() {
+    const url = `${apiBaseUrl}equipe/prochainid`;
+    
+    let monId = 0;
+    const response = await fetch(url);
+    if(response.ok) {
+        monId = await response.json();
+        console.log(`monId: ${monId}`);
+    }
+
+    return monId;
+    /*fetch(url).then((response) => response.json())
+        .then((idARetourner) => {
+            console.log(`x: ${idARetourner}`);
+            return idARetourner;
+        })
+    .catch((error) => {
+        console.error(error.message);
+    });*/
+}
+
 async function ajoutEquipe(entree) {
-    const url = "http://localhost:5245/api/equipe/";
+    const url = `${apiBaseUrl}equipe/`;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('accept', '*/*');
@@ -264,7 +311,7 @@ function getDivisionClass(division) {
 
 async function listerDivision()
 {
-    const url = "http://localhost:5245/api/division/";
+    const url = `${apiBaseUrl}division/`;
     let json = "";
     try {
         const response = await fetch(url);
@@ -285,7 +332,7 @@ async function obtenirDivision(division)
     if (!division) return '';
     if (!Number.isInteger(division)) return '';
 
-    const url = "http://localhost:5245/api/division/" + division;
+    const url = `${apiBaseUrl}division/` + division;
     let json = "";
     try {
         const response = await fetch(url);

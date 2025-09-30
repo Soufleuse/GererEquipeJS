@@ -7,6 +7,6 @@ services:
     ports:
       - "12080:12080"
       - "5245:5245"
-      - "14330:1433"
+      - "14331:1433"
     restart: unless-stopped
   

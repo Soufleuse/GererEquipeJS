@@ -1,3 +1,7 @@
+require('../environnement/.env_dev').config();
+
+const apiBaseUrl = process.env.API_BASE_URL;
+
 async function getEquipe(id) {
     if (id === undefined) {
         return "";
@@ -7,7 +11,7 @@ async function getEquipe(id) {
         return "";
     }
 
-    const url = "http://localhost:5245/api/equipe/" + id;
+    const url = `${apiBaseUrl}api/equipe/` + id;
     let json = "";
     try {
         const response = await fetch(url);
@@ -21,29 +25,6 @@ async function getEquipe(id) {
     catch (error) {
         console.error(error.message);
     }
-
-    return json;
-}
-
-async function ObtenirListeEquipe() {
-    console.log("Entrée dans ObtenirListeEquipe");
-
-    const url = "http://localhost:5245/api/equipe/";
-    let json = "";
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Statut de la réponse : ${response.status}`);
-        }
-
-        json = await response.json();
-        console.log(json);
-    }
-    catch (error) {
-        console.error(error.message);
-    }
-    
-    console.log("Sortie de ObtenirListeEquipe");
 
     return json;
 }
@@ -52,7 +33,7 @@ async function majEquipe(entree)
 {
     console.log('Entrée majEquipe : ', entree);
     
-    const url = "http://localhost:5245/api/equipe/" + entree.id;
+    const url = `${apiBaseUrl}api/equipe/` + entree.id;
     console.log("url : ", url);
     console.log("data stringifié : " + JSON.stringify(entree));
 
@@ -84,7 +65,7 @@ async function majEquipe(entree)
 }
 
 async function getDernierNumeroEquipe() {
-    const url = "http://localhost:5245/api/equipe/prochainid";
+    const url = `${apiBaseUrl}api/equipe/prochainid`;
     
     let monId = 0;
     const response = await fetch(url);
@@ -106,7 +87,7 @@ async function getDernierNumeroEquipe() {
 
 function ajoutEquipe(entree)
 {
-    const url = "http://localhost:5245/api/equipe/";
+    const url = `${apiBaseUrl}api/equipe/`;
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
