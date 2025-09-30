@@ -6,3 +6,4 @@ mysql_data/*
 
 # Ne pas suivre certains fichiers backup
 *-bck.*
+*.bck

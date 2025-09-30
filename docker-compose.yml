@@ -1,11 +1,12 @@
 services:
   nginx:
     build: 
-      context: .
-      dockerfile: Dockerfile
-    container_name: nginx-alpine-oce
+      context: ../../
+      dockerfile: js/GererEquipeJS/Dockerfile
+    container_name: GererEquipeJs
     ports:
-      - "12081:12080"
+      - "12080:12080"
       - "5245:5245"
+      - "14330:1433"
     restart: unless-stopped
   

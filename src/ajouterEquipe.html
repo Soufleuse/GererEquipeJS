@@ -1,13 +1,19 @@
-<?php $page = "index"; ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
 	<title>Ajouter une équipe de hockey</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(function() {
+            $("#enteteContent").load('inc/entete.html');
+        });
+    </script>
 </head>
 <body>
-    <?php include('inc/entete.php'); ?>
+    <div id="enteteContent"></div>
     <div id="wrap">
         <form name="ajoutequipe" onsubmit="return soumettreFormulaire(event)">
             <p>
@@ -93,7 +99,6 @@
             
             return false; // Empêche la soumission du formulaire
         }
-        </script>
-    <?php include('inc/pied.php') ?>
+    </script>
 </body>
 </html>
