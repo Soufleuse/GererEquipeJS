@@ -157,10 +157,7 @@
                                     <i class="fas fa-layer-group me-1"></i> Division
                                 </label>
                                 <select class="form-select" id="teamDivision" name="division" required>
-                                    <!--option value="">Sélectionner une division</option>
-                                    <option value="est">Est</option>
-                                    <option value="ouest">Ouest</option>
-                                    <option value="central">Central</option-->
+                                <!-- Le contenu sera généré automatiquement -->
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -189,6 +186,76 @@
                         <i class="fas fa-times me-1"></i> Annuler
                     </button>
                     <button type="button" class="btn btn-hockey-primary" onclick="ajouterEquipe()">
+                        <i class="fas fa-save me-1"></i> Sauvegarder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour modifier une équipe -->
+    <div class="modal fade" id="editTeamModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--hockey-blue); color: white;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Modifier l'équipe
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTeamForm">
+                        <input type="hidden" id="editTeamId" name="id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editTeamName" class="form-label">
+                                    <i class="fas fa-team me-1"></i> Nom de l'équipe
+                                </label>
+                                <input type="text" class="form-control" id="editTeamName" name="nomEquipe" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTeamCity" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i> Ville
+                                </label>
+                                <input type="text" class="form-control" id="editTeamCity" name="ville" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editTeamDivision" class="form-label">
+                                    <i class="fas fa-layer-group me-1"></i> Division
+                                </label>
+                                <select class="form-select" id="editTeamDivision" name="division" required>
+                                    <!-- Le contenu sera généré automatiquement -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTeamFounded" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Année de fondation
+                                </label>
+                                <input type="number" class="form-control" id="editTeamFounded" name="anneeDebut" min="1800" max="2025">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTeamCeased" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Année de fermeture (optionnel)
+                                </label>
+                                <input type="number" class="form-control" id="editTeamCeased" name="anneeFin" min="1800" max="2025">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editBecameTeam" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Est devenue équipe (optionnelle)
+                                </label>
+                                <input type="number" class="form-control" id="editBecameTeam" name="estDevenueEquipe">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-hockey-primary" onclick="sauvegarderModification()">
                         <i class="fas fa-save me-1"></i> Sauvegarder
                     </button>
                 </div>

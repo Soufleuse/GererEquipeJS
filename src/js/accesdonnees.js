@@ -6,7 +6,7 @@ let currentPage = 1;
 const itemsPerPage = 10;
 const apiBaseUrl = "http://localhost:5246/api/";
 
-// Vos fonctions d'accès aux données existantes
+// Obtenir une équipe avec son id
 async function getEquipe(id) {
     if (id === undefined || id < 1) {
         return "";
@@ -28,7 +28,6 @@ async function getEquipe(id) {
 }
 
 async function ObtenirListeEquipe() {
-    console.log("Entrée dans ObtenirListeEquipe");
 
     const url = `${apiBaseUrl}equipe/`;
     let json = "";
@@ -39,14 +38,11 @@ async function ObtenirListeEquipe() {
         }
 
         json = await response.json();
-        console.log(json);
     }
     catch (error) {
         console.error(error.message);
     }
     
-    console.log("Sortie de ObtenirListeEquipe");
-
     return json;
 }
 
@@ -75,25 +71,55 @@ async function majEquipe(entree) {
     headers.append('Content-Type', 'application/json');
     headers.append('accept', '*/*');
     
-    try {
-        const response = await fetch(url, {
+    fetch(url, {
             method: "PUT",
             headers: headers,
             body: JSON.stringify(entree)
+        }).then((response) => {
+            if (!response.ok) {
+                console.log(`Erreur response: `, response.Error);
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+            
+            alert("Équipe mise à jour avec succès!");
+            chargerEquipes().then(() => { console.log('Équipes rechargées'); }); // Recharger la liste
+        }).catch((error) => {
+            console.error('Erreur lors de la mise à jour:', error);
+            alert("Erreur lors de la mise à jour de l'équipe.");
         });
-        
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        alert("Équipe mise à jour avec succès!");
-        console.log('Mise à jour réussie - Code:', response.status);
-        await chargerEquipes(); // Recharger la liste
-        
-    } catch (error) {
-        console.error('Erreur lors de la mise à jour:', error);
-        alert("Erreur lors de la mise à jour de l'équipe.");
+}
+// Fonction pour sauvegarder les modifications
+function sauvegarderModification() {
+    const form = document.getElementById('editTeamForm');
+    const formData = new FormData(form);
+    
+    const equipeModifiee = {
+        id: parseInt(document.getElementById('editTeamId').value),
+        nomEquipe: formData.get('nomEquipe'),
+        ville: formData.get('ville'),
+        divisionId: parseInt(formData.get('division')),
+        anneeDebut: parseInt(formData.get('anneeDebut')) || null,
+        anneeFin: parseInt(formData.get('anneeFin')) || null,
+        estDevenueEquipe: parseInt(formData.get('estDevenueEquipe')) || null
+    };
+
+    // Validation basique
+    if (!equipeModifiee.nomEquipe || !equipeModifiee.ville || !equipeModifiee.divisionId || !equipeModifiee.anneeDebut) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
     }
+
+    majEquipe(equipeModifiee).then(() => {
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editTeamModal'));
+            modal.hide();
+            
+            // Réinitialiser le formulaire
+            form.reset();
+        })
+        .catch((error) => {
+            console.error('Erreur lors de la sauvegarde:', error);
+        });
 }
 
 async function getDernierNumeroEquipe() {
@@ -103,21 +129,12 @@ async function getDernierNumeroEquipe() {
     const response = await fetch(url);
     if(response.ok) {
         monId = await response.json();
-        console.log(`monId: ${monId}`);
     }
     else {
-        console.log(`Erreur pour obtenir le dernier numéro d'équipe, erreur : ` + response.Error);
+        alert(`Erreur pour obtenir le dernier numéro d'équipe, erreur : ` + response.Error);
     }
 
     return monId;
-    /*fetch(url).then((response) => response.json())
-        .then((idARetourner) => {
-            console.log(`x: ${idARetourner}`);
-            return idARetourner;
-        })
-    .catch((error) => {
-        console.error(error.message);
-    });*/
 }
 
 async function ajoutEquipe(entree) {
@@ -142,7 +159,6 @@ async function ajoutEquipe(entree) {
         await chargerEquipes(); // Recharger la liste
         
     } catch (error) {
-        console.error('Erreur lors de l\'ajout:', error);
         alert("Erreur lors de l\'ajout de l'équipe.");
     }
 }
@@ -152,37 +168,33 @@ async function chargerDivisions() {
     montrerChargementDivisions(true);
     hideError();
     
-    try {
-        toutesLesDivisions = await listerDivision();
+    listerDivision().then((mesDivisions) => {
+        toutesLesDivisions = mesDivisions;
         afficherDivision();
-    } catch (error) {
+    }).catch((error) => {
         showError('Erreur lors du chargement des divisions: ' + error.message);
-    } finally {
+    }).finally(() => {
         montrerChargementDivisions(false);
-    }
+    });
 }
 
 async function chargerEquipes() {
-    console.log('Entrée dans chargerEquipes');
     montrerChargementEquipes(true);
     hideError();
     
-    try {
-        toutesLesEquipes = await getListeEquipe();
-        console.log(toutesLesEquipes);
+    getListeEquipe().then((mesEquipes) => {
+        toutesLesEquipes = mesEquipes;
         equipesAffichees = [...toutesLesEquipes];
         mettreAJourStatistiques();
-        console.log('mettreAJourStatistiques fait');
         afficherEquipes();
-        console.log('afficherEquipes fait');
         currentPage = 1;
         mettreAJourPagination();
-        console.log('mettreAJourPagination fait');
-    } catch (error) {
+    }).catch((error) => {
+        console.log(error);
         showError('Erreur lors du chargement des équipes: ' + error.message);
-    } finally {
+    }).finally(() => {
         montrerChargementEquipes(false);
-    }
+    })
 }
 
 function mettreAJourStatistiques() {
@@ -427,8 +439,52 @@ function filtrerEquipes() {
 }
 
 // Fonctions pour les actions des boutons
+// Fonction pour ouvrir le modal de modification avec les données de l'équipe
 function modifierEquipe(id) {
-    alert(`Fonction de modification pour l'équipe ${id} - À implémenter`);
+    // Récupérer les données de l'équipe
+    getEquipe(id).then((equipe) => {
+        if (!equipe) {
+            alert('Erreur: Équipe non trouvée');
+            return;
+        }
+
+        setTimeout(() => {
+             // Remplir le select des divisions si ce n'est pas déjà fait
+            const selectDivision = document.getElementById('editTeamDivision');
+            if (selectDivision.options.length <= 1) {
+                selectDivision.innerHTML = '<option value="">Sélectionner une division</option>';
+                toutesLesDivisions.forEach((division) => {
+                    const option = document.createElement('option');
+                    option.value = division.id;
+                    option.innerHTML = division.nomDivision;
+                    selectDivision.appendChild(option);
+                });
+            }
+
+            console.log('Division équipe ', equipe.divisionId);
+
+            // Re-sélectionner la division de l'équipe après avoir rempli le select
+            selectDivision.value = equipe.divisionId || '';
+
+            // Remplir le formulaire avec les données existantes
+            document.getElementById('editTeamId').value = equipe.id;
+            document.getElementById('editTeamName').value = equipe.nomEquipe || '';
+            document.getElementById('editTeamCity').value = equipe.ville || '';
+            document.getElementById('editTeamDivision').value = equipe.divisionId || '';
+            document.getElementById('editTeamFounded').value = equipe.anneeDebut || '';
+            document.getElementById('editTeamCeased').value = equipe.anneeFin || '';
+            document.getElementById('editBecameTeam').value = equipe.estDevenueEquipe || '';
+
+           // Ouvrir le modal
+            const modal = new bootstrap.Modal(document.getElementById('editTeamModal'));
+            modal.show();
+        }, 100);
+
+    })
+    .catch((error) => {
+        console.error('Erreur lors du chargement de l\'équipe:', error);
+        alert('Erreur lors du chargement des données de l\'équipe');
+    });
 }
 
 function voirEquipe(id) {
@@ -443,7 +499,6 @@ function supprimerEquipe(id) {
 
 // Fonction pour ajouter une équipe depuis le modal
 async function ajouterEquipe() {
-    console.log('Entrée dams ajouterEquipe');
     const form = document.getElementById('addTeamForm');
     const formData = new FormData(form);
     
@@ -462,21 +517,19 @@ async function ajouterEquipe() {
         return;
     }
 
-    console.log('Appels aux méthodes serveur');
     getDernierNumeroEquipe().then((resultat) => {
-                                    console.log('Id équipe obtenue');
-                                    nouvelleEquipe.id = resultat;
-                                    return ajoutEquipe(nouvelleEquipe);
-                                })
-                                .then(() => {
-                                    // Fermer le modal
-                                    const modal = bootstrap.Modal.getInstance(document.getElementById('addTeamModal'));
-                                    modal.hide();
-                                    // Réinitialiser le formulaire
-                                    form.reset();
-                                })
-                            .catch((error) => { 'Erreur lors de l\'ajout:', error })
-                            .finally(() => { console.log('Fin ajout équipe'); });
+            nouvelleEquipe.id = resultat;
+            return ajoutEquipe(nouvelleEquipe);
+        }).then(() => {
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addTeamModal'));
+            modal.hide();
+            // Réinitialiser le formulaire
+            form.reset();
+        }).catch((error) => {
+            alert('Erreur lors de l\'ajout:', error);
+        }).finally(() => { console.log('Fin getDernierNumeroEquipe');
+     });
 }
 
 // Fonctions utilitaires
@@ -499,13 +552,19 @@ function hideError() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Charger les divisions au démarrage
-    chargerDivisions();
-
-    // Charger les équipes au démarrage
-    chargerEquipes();
-
-    // Event listeners pour les filtres
-    document.getElementById('searchInput').addEventListener('input', filtrerEquipes);
-    document.getElementById('divisionFilter').addEventListener('change', filtrerEquipes);
+    setTimeout(() => {
+        // Charger les divisions au démarrage
+        chargerDivisions().then(() => {
+            // Charger les équipes au démarrage
+            chargerEquipes().then(() => {
+                // Event listeners pour les filtres
+                document.getElementById('searchInput').addEventListener('input', filtrerEquipes);
+                document.getElementById('divisionFilter').addEventListener('change', filtrerEquipes);
+            }).catch((error) => {
+                alert(error);
+            });
+        }).catch((error) => {
+            alert(error);
+        });
+    }, 100);
 });
