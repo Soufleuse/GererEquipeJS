@@ -105,6 +105,9 @@ async function getDernierNumeroEquipe() {
         monId = await response.json();
         console.log(`monId: ${monId}`);
     }
+    else {
+        console.log(`Erreur pour obtenir le dernier numéro d'équipe, erreur : ` + response.Error);
+    }
 
     return monId;
     /*fetch(url).then((response) => response.json())
@@ -160,16 +163,21 @@ async function chargerDivisions() {
 }
 
 async function chargerEquipes() {
+    console.log('Entrée dans chargerEquipes');
     montrerChargementEquipes(true);
     hideError();
     
     try {
         toutesLesEquipes = await getListeEquipe();
+        console.log(toutesLesEquipes);
         equipesAffichees = [...toutesLesEquipes];
         mettreAJourStatistiques();
+        console.log('mettreAJourStatistiques fait');
         afficherEquipes();
+        console.log('afficherEquipes fait');
         currentPage = 1;
         mettreAJourPagination();
+        console.log('mettreAJourPagination fait');
     } catch (error) {
         showError('Erreur lors du chargement des équipes: ' + error.message);
     } finally {
@@ -435,6 +443,7 @@ function supprimerEquipe(id) {
 
 // Fonction pour ajouter une équipe depuis le modal
 async function ajouterEquipe() {
+    console.log('Entrée dams ajouterEquipe');
     const form = document.getElementById('addTeamForm');
     const formData = new FormData(form);
     
@@ -453,16 +462,21 @@ async function ajouterEquipe() {
         return;
     }
 
-    try {
-        await ajoutEquipe(nouvelleEquipe);
-        // Fermer le modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addTeamModal'));
-        modal.hide();
-        // Réinitialiser le formulaire
-        form.reset();
-    } catch (error) {
-        console.error('Erreur lors de l\'ajout:', error);
-    }
+    console.log('Appels aux méthodes serveur');
+    getDernierNumeroEquipe().then((resultat) => {
+                                    console.log('Id équipe obtenue');
+                                    nouvelleEquipe.id = resultat;
+                                    return ajoutEquipe(nouvelleEquipe);
+                                })
+                                .then(() => {
+                                    // Fermer le modal
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById('addTeamModal'));
+                                    modal.hide();
+                                    // Réinitialiser le formulaire
+                                    form.reset();
+                                })
+                            .catch((error) => { 'Erreur lors de l\'ajout:', error })
+                            .finally(() => { console.log('Fin ajout équipe'); });
 }
 
 // Fonctions utilitaires

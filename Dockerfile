@@ -54,15 +54,15 @@ ENV DOTNET_ENVIRONMENT=Development
 
 # Crée /var/www/html pour aller mettre ce qui a été créé dans le stage depart
 RUN mkdir -p /var/www/html
-COPY ./js/GererEquipeJS/src /var/www/html/
+COPY js/GererEquipeJS/src /var/www/html/
 
 # Copier l'application .NET compilée
 RUN mkdir -p /app
 COPY --from=dotnet-build /app /app
 
 # Copier les configurations Nginx et Supervisor
-COPY ./js/GererEquipeJS/conf/nginx.conf /etc/nginx/conf.d/default.conf
-COPY ./js/GererEquipeJS/conf/supervisord.conf /etc/supervisord.conf
+COPY js/GererEquipeJS/conf/nginx.conf /etc/nginx/conf.d/default.conf
+COPY js/GererEquipeJS/conf/supervisord.conf /etc/supervisord.conf
 
 # Définir les permissions appropriées
 RUN chown -R nginx:nginx /var/www/html
