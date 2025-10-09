@@ -6,7 +6,7 @@
     <title>Gestion des Équipes - Ligue Hockey</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
@@ -185,7 +185,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i> Annuler
                     </button>
-                    <button type="button" class="btn btn-hockey-primary" onclick="ajouterEquipe()">
+                    <button type="button" class="btn btn-hockey-primary" id="ajouterEquipe" onclick="ajouterEquipe()">
                         <i class="fas fa-save me-1"></i> Sauvegarder
                     </button>
                 </div>
@@ -255,7 +255,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i> Annuler
                     </button>
-                    <button type="button" class="btn btn-hockey-primary" onclick="sauvegarderModification()">
+                    <button type="button" class="btn btn-hockey-primary" id="saveButton" onclick="sauvegarderModification()">
                         <i class="fas fa-save me-1"></i> Sauvegarder
                     </button>
                 </div>

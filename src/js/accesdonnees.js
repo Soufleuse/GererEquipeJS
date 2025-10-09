@@ -88,25 +88,44 @@ async function majEquipe(entree) {
             alert("Erreur lors de la mise à jour de l'équipe.");
         });
 }
+
 // Fonction pour sauvegarder les modifications
 function sauvegarderModification() {
     const form = document.getElementById('editTeamForm');
-    const formData = new FormData(form);
     
     const equipeModifiee = {
         id: parseInt(document.getElementById('editTeamId').value),
-        nomEquipe: formData.get('nomEquipe'),
-        ville: formData.get('ville'),
-        divisionId: parseInt(formData.get('division')),
-        anneeDebut: parseInt(formData.get('anneeDebut')) || null,
-        anneeFin: parseInt(formData.get('anneeFin')) || null,
-        estDevenueEquipe: parseInt(formData.get('estDevenueEquipe')) || null
+        nomEquipe: document.getElementById('editTeamName').value,
+        ville: document.getElementById('editTeamCity').value,
+        divisionId: parseInt(document.getElementById('editTeamDivision').value),
+        anneeDebut: parseInt(document.getElementById('editTeamFounded').value) || null,
+        anneeFin: parseInt(document.getElementById('editTeamCeased').value) || null,
+        estDevenueEquipe: parseInt(document.getElementById('editBecameTeam').value) || null
     };
 
-    // Validation basique
-    if (!equipeModifiee.nomEquipe || !equipeModifiee.ville || !equipeModifiee.divisionId || !equipeModifiee.anneeDebut) {
-        alert('Veuillez remplir tous les champs obligatoires');
-        return;
+    console.log(`equipeModifiee : `, JSON.stringify(equipeModifiee));
+
+    const modalTitle = document.querySelector('#editTeamModal .modal-title').textContent;
+    if (modalTitle.includes('Fermer')) {
+        if (!equipeModifiee.anneeFin) {
+            alert('Veuillez entrer une année de fermeture');
+            return;
+        }    
+        if (equipeModifiee.anneeFin < equipeModifiee.anneeDebut) {
+            alert('L\'année de fermeture ne peut pas être antérieure à l\'année de fondation');
+            return;
+        }
+        
+        if (equipeModifiee.anneeFin > new Date().getFullYear()) {
+            alert('L\'année de fermeture ne peut pas être dans le futur');
+            return;
+        }
+    } else {
+        // Validation basique pour modification normale
+        if (!equipeModifiee.nomEquipe || !equipeModifiee.ville || !equipeModifiee.divisionId || !equipeModifiee.anneeDebut) {
+            alert('Veuillez remplir tous les champs obligatoires');
+            return;
+        }
     }
 
     majEquipe(equipeModifiee).then(() => {
@@ -440,7 +459,7 @@ function filtrerEquipes() {
 
 // Fonctions pour les actions des boutons
 // Fonction pour ouvrir le modal de modification avec les données de l'équipe
-function modifierEquipe(id) {
+function modifierEquipe(id, mode = 'edit') {
     // Récupérer les données de l'équipe
     getEquipe(id).then((equipe) => {
         if (!equipe) {
@@ -461,8 +480,6 @@ function modifierEquipe(id) {
                 });
             }
 
-            console.log('Division équipe ', equipe.divisionId);
-
             // Re-sélectionner la division de l'équipe après avoir rempli le select
             selectDivision.value = equipe.divisionId || '';
 
@@ -474,8 +491,60 @@ function modifierEquipe(id) {
             document.getElementById('editTeamFounded').value = equipe.anneeDebut || '';
             document.getElementById('editTeamCeased').value = equipe.anneeFin || '';
             document.getElementById('editBecameTeam').value = equipe.estDevenueEquipe || '';
+            
+            const modalTitle = document.querySelector('#editTeamModal .modal-title');
+            const allFields = document.querySelectorAll('#editTeamForm input, #editTeamForm select');
+            const saveButton = document.querySelector('#editTeamModal .btn-hockey-primary');
+            const closeField = document.getElementById('editTeamCeased');
 
-           // Ouvrir le modal
+            console.log(`saveButton: `, saveButton);
+
+            if(mode === 'view') {
+                // Changer le titre
+                modalTitle.innerHTML = '<i class="fas fa-eye me-2"></i>Consulter l\'équipe';
+                
+                // Désactiver tous les champs
+                allFields.forEach(field => {
+                    field.setAttribute('disabled', 'disabled');
+                });
+                
+                // Cacher le bouton Sauvegarder
+                saveButton.style.display = 'none';
+            } else if (mode === 'close')  {
+                // Mode fermeture (seulement année de fin modifiable)
+                modalTitle.innerHTML = '<i class="fas fa-ban me-2"></i>Fermer l\'équipe';
+                modalTitle.parentElement.style.background = '#dc3545'; // Rouge pour fermeture
+                
+                // Désactiver tous les champs SAUF l'année de fermeture
+                allFields.forEach(field => {
+                    if (field.id !== 'editTeamCeased') {
+                        field.setAttribute('disabled', 'disabled');
+                    }
+                });
+                
+                // S'assurer que le champ année de fermeture est actif et en focus
+                closeField.removeAttribute('disabled');
+                closeField.focus();
+                
+                // Modifier le texte du bouton Sauvegarder
+                saveButton.innerHTML = '<i class="fas fa-ban me-1"></i> Fermer l\'équipe';
+                saveButton.classList.remove('btn-hockey-primary');
+                saveButton.classList.add('btn-danger');
+                saveButton.style.display = 'inline-block';
+            } else {
+                // Mode modification : réactiver tout
+                modalTitle.innerHTML = '<i class="fas fa-edit me-2"></i>Modifier l\'équipe';
+                
+                allFields.forEach(field => {
+                    field.removeAttribute('disabled');
+                });
+
+                saveButton.classList.remove('btn-danger');
+                saveButton.classList.add('btn-hockey-primary');
+                saveButton.style.display = 'inline-block';
+            }
+
+            // Ouvrir le modal
             const modal = new bootstrap.Modal(document.getElementById('editTeamModal'));
             modal.show();
         }, 100);
@@ -488,13 +557,21 @@ function modifierEquipe(id) {
 }
 
 function voirEquipe(id) {
-    alert(`Fonction de visualisation pour l'équipe ${id} - À implémenter`);
+    modifierEquipe(id, 'view');
 }
 
 function supprimerEquipe(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')) {
-        alert(`Fonction de suppression pour l'équipe ${id} - À implémenter`);
-    }
+    // Récupérer l'équipe pour vérifier si elle n'est pas déjà fermée
+    getEquipe(id).then((equipe) => {
+        if (equipe.anneeFin) {
+            alert(`Cette équipe est déjà fermée depuis ${equipe.anneeFin}.`);
+            return;
+        }
+        
+        if (confirm('Voulez-vous fermer cette équipe en ajoutant une année de fin ?')) {
+            modifierEquipe(id, 'close');
+        }
+    });
 }
 
 // Fonction pour ajouter une équipe depuis le modal
@@ -566,5 +643,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }).catch((error) => {
             alert(error);
         });
-    }, 100);
+    }, 200);
 });
