@@ -22,10 +22,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#"><i class="fas fa-users me-1"></i> Équipes</a>
+                        <a class="nav-link active" href="#equipes"><i class="fas fa-users me-1"></i> Équipes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-chart-bar me-1"></i> Statistiques</a>
+                        <a class="nav-link" href="#statistiques"><i class="fas fa-chart-bar me-1"></i> Statistiques</a>
                     </li>
                 </ul>
             </div>
@@ -34,92 +34,124 @@
 
     <!-- Main Content -->
     <div class="container mt-4">
-        <!-- Header Section -->
-        <div class="main-header">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="page-title">
-                        <i class="fas fa-users text-primary me-3"></i>
-                        Gestion des Équipes
-                    </h1>
-                    <p class="page-subtitle mb-0">
-                        Gérez les équipes de la ligue de hockey
-                    </p>
+        <!-- SECTION ÉQUIPES -->
+        <div id="sectionEquipes">
+            <!-- Header Section -->
+            <div class="main-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">
+                            <i class="fas fa-users text-primary me-3"></i>
+                            Gestion des Équipes
+                        </h1>
+                        <p class="page-subtitle mb-0">
+                            Gérez les équipes de la ligue de hockey
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-hockey-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTeamModal">
+                            <i class="fas fa-plus me-2"></i>
+                            Nouvelle Équipe
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-4 text-end">
-                    <button class="btn btn-hockey-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTeamModal">
-                        <i class="fas fa-plus me-2"></i>
-                        Nouvelle Équipe
-                    </button>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <!-- Cartes des statistiques -->
+            <div id="cartesStats">
+                <!-- Indicateur de chargement -->
+                <div id="loadingDivisions" class="loading">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Chargement des divisions...</p>
+                </div>
+                <div id="cartesStatsDiv" class="row mb-4">
+                    <!-- Les cartes divisions seront chargées dynamiquement. -->
+                </div>
+            </div>
+
+            <!-- Table des équipes -->
+            <div class="team-table">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <h4 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Équipes</h4>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher une équipe..." style="width: 250px;">
+                        <select id="divisionFilter" class="form-select" style="width: 150px;">
+                            <!-- Les divisions seront générées automatiquement. -->
+                        </select>
+                        <button class="btn btn-outline-primary" onclick="chargerEquipes()" title="Actualiser">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading indicator -->
+                <div id="loadingEquipes" class="loading">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">Chargement des équipes...</p>
+                </div>
+                
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i> ID</th>
+                            <th><i class="fas fa-team me-1"></i> Nom de l'équipe</th>
+                            <th><i class="fas fa-map-marker-alt me-1"></i> Ville</th>
+                            <th><i class="fas fa-layer-group me-1"></i> Division</th>
+                            <th><i class="fas fa-calendar me-1"></i> Fondée</th>
+                            <th><i class="fas fa-cogs me-1"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipesTableBody">
+                        <!-- Les équipes seront chargées ici dynamiquement -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                    <div class="text-muted" id="paginationInfo">
+                        Chargement...
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0" id="paginationNav">
+                            <!-- Pagination sera générée dynamiquement -->
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="error-message">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <span id="errorText"></span>
-        </div>
-
-        <!-- Cartes des statistiques -->
-        <div id="cartesStats">
-            <!-- Indicateur de chargement -->
-            <div id="loadingDivisions" class="loading">
-                <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
-                <p class="mt-2">Chargement des divisions...</p>
-            </div>
-            <div id="cartesStatsDiv" class="row mb-4">
-                <!-- Les cartes divisions seront chargées dynamiquement. -->
-            </div>
-        </div>
-
-        <!-- Table des équipes -->
-        <div class="team-table">
-            <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-                <h4 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Équipes</h4>
-                <div class="d-flex gap-2">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher une équipe..." style="width: 250px;">
-                    <select id="divisionFilter" class="form-select" style="width: 150px;">
-                        <!-- Les divisions seront générées automatiquement. -->
-                    </select>
-                    <button class="btn btn-outline-primary" onclick="chargerEquipes()" title="Actualiser">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+        <!-- SECTION STATISTIQUES -->
+        <div id="sectionStatistiques" style="display: none;">
+            <!-- Header Section -->
+            <div class="main-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">
+                            <i class="fas fa-chart-bar text-primary me-3"></i>
+                            Statistiques Détaillées
+                        </h1>
+                        <p class="page-subtitle mb-0">
+                            Consultez les statistiques de la ligue
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-hockey-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addStatsModal">
+                            <i class="fas fa-plus me-2"></i>
+                            Nouvelles statistiques
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Loading indicator -->
-            <div id="loadingEquipes" class="loading">
-                <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
-                <p class="mt-2">Chargement des équipes...</p>
-            </div>
-            
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-hashtag me-1"></i> ID</th>
-                        <th><i class="fas fa-team me-1"></i> Nom de l'équipe</th>
-                        <th><i class="fas fa-map-marker-alt me-1"></i> Ville</th>
-                        <th><i class="fas fa-layer-group me-1"></i> Division</th>
-                        <th><i class="fas fa-calendar me-1"></i> Fondée</th>
-                        <th><i class="fas fa-cogs me-1"></i> Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="equipesTableBody">
-                    <!-- Les équipes seront chargées ici dynamiquement -->
-                </tbody>
-            </table>
-            
-            <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                <div class="text-muted" id="paginationInfo">
-                    Chargement...
-                </div>
-                <nav>
-                    <ul class="pagination mb-0" id="paginationNav">
-                        <!-- Pagination sera générée dynamiquement -->
-                    </ul>
-                </nav>
+            <!-- Contenu des statistiques -->
+            <div id="statsContent">
+                <!-- Le contenu sera généré dynamiquement par JavaScript -->
             </div>
         </div>
     </div>
@@ -176,7 +208,10 @@
                                 <label for="becameTeam" class="form-label">
                                     <i class="fas fa-calendar me-1"></i> Est devenue équipe (optionnelle)
                                 </label>
-                                <input type="number" class="form-control" id="becameTeam" name="estDevenueEquipe">
+                                <!--input type="number" class="form-control" id="becameTeam" name="estDevenueEquipe"-->
+                                <select class="form-select" id="becameTeam" name="becameTeam">
+                                    <!-- Ce contenu sera généré automatiquement -->
+                                </select>
                             </div>
                         </div>
                     </form>
@@ -256,6 +291,76 @@
                         <i class="fas fa-times me-1"></i> Annuler
                     </button>
                     <button type="button" class="btn btn-hockey-primary" id="saveButton" onclick="sauvegarderModification()">
+                        <i class="fas fa-save me-1"></i> Sauvegarder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter une équipe -->
+    <div class="modal fade" id="addStatsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--hockey-blue); color: white;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>
+                        Ajouter une nouvelle statistique pour une équipe
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStatsForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="teamStatsName" class="form-label">
+                                    <i class="fas fa-team me-1"></i> Nom de l'équipe
+                                </label>
+                                <input type="text" class="form-control" id="teamStatsName" name="nomStatsEquipe" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="teamStatsCity" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i> Ville
+                                </label>
+                                <input type="text" class="form-control" id="teamStatsCity" name="villeStats" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="teamStatsDivision" class="form-label">
+                                    <i class="fas fa-layer-group me-1"></i> Division
+                                </label>
+                                <select class="form-select" id="teamStatsDivision" name="divisionStats" required>
+                                <!-- Le contenu sera généré automatiquement -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="teamStatsFounded" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Année de fondation
+                                </label>
+                                <input type="number" class="form-control" id="teamStatsFounded" name="anneeStatsDebutStats" min="1800" max="2025">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="teamStatsCeased" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Année de fermeture (optionnel)
+                                </label>
+                                <input type="number" class="form-control" id="teamStatsCeased" name="anneeStatsFinStats" min="1800" max="2025">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="becameStatsTeam" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i> Est devenue équipe (optionnelle)
+                                </label>
+                                <input type="number" class="form-control" id="becameStatsTeam" name="estDevenueEquipeStats">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-hockey-primary" id="ajouterStatsEquipe" onclick="ajouterStatsEquipe()">
                         <i class="fas fa-save me-1"></i> Sauvegarder
                     </button>
                 </div>

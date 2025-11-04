@@ -6,6 +6,33 @@ let currentPage = 1;
 const itemsPerPage = 10;
 const apiBaseUrl = "http://localhost:5246/api/";
 
+// Variable globale pour les stats
+let statsEquipes = [];
+let anneeSelectionnee = new Date().getFullYear();
+
+// Fonction pour gérer la navigation entre les sections
+function naviguerVers(section) {
+    // Cacher toutes les sections
+    document.getElementById('sectionEquipes').style.display = 'none';
+    document.getElementById('sectionStatistiques').style.display = 'none';
+    
+    // Retirer la classe active de tous les liens
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Afficher la section demandée et activer le lien correspondant
+    if (section === 'equipes') {
+        document.getElementById('sectionEquipes').style.display = 'block';
+        document.querySelector('a[href="#equipes"]').classList.add('active');
+    } else if (section === 'statistiques') {
+        document.getElementById('sectionStatistiques').style.display = 'block';
+        document.querySelector('a[href="#statistiques"]').classList.add('active');
+        // Charger les statistiques détaillées si nécessaire
+        afficherStatistiquesDetailees();
+    }
+}
+
 // Obtenir une équipe avec son id
 async function getEquipe(id) {
     if (id === undefined || id < 1) {
@@ -281,6 +308,24 @@ function afficherDivision()
     });
 }
 
+function ajouterEquipeBecameTeam(id) {
+    const listeOptionBecameTeam = document.getElementById('becameTeam');
+    var opt = document.createElement('option');
+    opt.value = '';
+    opt.innerHTML = "Sélectionnez une équipe";
+    listeOptionBecameTeam.appendChild(opt);
+    
+    var ajoutOption = document.createElement('option');
+    toutesLesEquipes.forEach((x) => {
+        if (x.id != id) {
+            console.log(x.nomEquipe);
+            ajoutOption.value = x.id;
+            ajoutOption.innerHTML = x.nomEquipe;
+            listeOptionBecameTeam.appendChild(ajoutOption);
+        }
+    });
+}
+
 function afficherEquipes() {
     const tbody = document.getElementById('equipesTableBody');
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -542,6 +587,8 @@ function modifierEquipe(id, mode = 'edit') {
                 saveButton.classList.remove('btn-danger');
                 saveButton.classList.add('btn-hockey-primary');
                 saveButton.style.display = 'inline-block';
+
+                //ajouterEquipeBecameTeam(id);
             }
 
             // Ouvrir le modal
@@ -609,6 +656,10 @@ async function ajouterEquipe() {
      });
 }
 
+async function ajouterStatsEquipe() {
+    alert('En construction...');
+}
+
 // Fonctions utilitaires
 function montrerChargementEquipes(show) {
     document.getElementById('loadingEquipes').style.display = show ? 'block' : 'none';
@@ -627,8 +678,192 @@ function hideError() {
     document.getElementById('errorMessage').style.display = 'none';
 }
 
-// Event listeners
+// Fonction pour récupérer les statistiques d'une année
+async function getStatsParAnnee(annee) {
+    const url = `${apiBaseUrl}StatsEquipe/parannee/${annee}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Statut de la réponse : ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Erreur lors du chargement des stats:', error.message);
+        throw error;
+    }
+}
+
+// Fonction pour afficher les statistiques de performance
+async function afficherStatistiquesDetailees() {
+    const statsContent = document.getElementById('statsContent');
+    
+    // Afficher le sélecteur d'année et le loader
+    statsContent.innerHTML = `
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-container">
+                    <label for="anneeStats" class="form-label">
+                        <i class="fas fa-calendar me-2"></i>Sélectionner une année
+                    </label>
+                    <select id="anneeStats" class="form-select" onchange="chargerStatsAnnee(this.value)">
+                        ${genererOptionsAnnees()}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="loading" style="display: block;">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+            <p class="mt-2">Chargement des statistiques...</p>
+        </div>
+        <div id="tableauStats"></div>
+    `;
+
+    // Charger les stats de l'année courante
+    await chargerStatsAnnee(anneeSelectionnee);
+}
+
+// Générer les options d'années (ex: 2015 à année courante)
+function genererOptionsAnnees() {
+    const anneeActuelle = new Date().getFullYear();
+    let options = '';
+    for (let annee = anneeActuelle; annee >= 2015; annee--) {
+        const selected = annee === anneeSelectionnee ? 'selected' : '';
+        options += `<option value="${annee}" ${selected}>${annee}</option>`;
+    }
+    return options;
+}
+
+// Charger les stats pour une année spécifique
+async function chargerStatsAnnee(annee) {
+    anneeSelectionnee = parseInt(annee);
+    const tableauStats = document.getElementById('tableauStats');
+    
+    try {
+        statsEquipes = await getStatsParAnnee(annee);
+        
+        if (!statsEquipes || statsEquipes.length === 0) {
+            tableauStats.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Aucune statistique disponible pour l'année ${annee}.
+                </div>
+            `;
+            return;
+        }
+
+        // Calculer les points pour chaque équipe (Victoire = 2 pts, Défaite Prolo = 1 pt)
+        statsEquipes.forEach(stat => {
+            stat.points = (stat.nbVictoires * 2) + stat.nbDefProlo;
+            stat.differentielButs = stat.nbButsPour - stat.nbButsContre;
+        });
+
+        // Trier par points (décroissant)
+        statsEquipes.sort((a, b) => b.points - a.points);
+
+        afficherTableauStats();
+        
+    } catch (error) {
+        tableauStats.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Erreur lors du chargement des statistiques : ${error.message}
+            </div>
+        `;
+    } finally {
+        // Cacher le loader
+        const loader = document.querySelector('#statsContent .loading');
+        if (loader) loader.style.display = 'none';
+    }
+}
+
+// Afficher le tableau des statistiques
+function afficherTableauStats() {
+    const tableauStats = document.getElementById('tableauStats');
+    
+    let html = `
+        <div class="team-table">
+            <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                <h4 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Classement ${anneeSelectionnee}
+                </h4>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i> #</th>
+                            <th><i class="fas fa-hockey-puck me-1"></i> Équipe</th>
+                            <th><i class="fas fa-city me-1"></i> Ville</th>
+                            <th class="text-center"><i class="fas fa-play me-1"></i> PJ</th>
+                            <th class="text-center"><i class="fas fa-check me-1"></i> V</th>
+                            <th class="text-center"><i class="fas fa-times me-1"></i> D</th>
+                            <th class="text-center"><i class="fas fa-clock me-1"></i> DP</th>
+                            <th class="text-center"><i class="fas fa-crosshairs me-1"></i> BP</th>
+                            <th class="text-center"><i class="fas fa-shield-alt me-1"></i> BC</th>
+                            <th class="text-center"><i class="fas fa-chart-line me-1"></i> Diff</th>
+                            <th class="text-center"><i class="fas fa-star me-1"></i> PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+
+    statsEquipes.forEach((stat, index) => {
+        const diffClass = stat.differentielButs >= 0 ? 'text-success' : 'text-danger';
+        const positionClass = index < 3 ? 'fw-bold' : '';
+        
+        html += `
+            <tr class="${positionClass}">
+                <td>${index + 1}</td>
+                <td><strong>${stat.equipe?.nomEquipe || 'N/A'}</strong></td>
+                <td>${stat.equipe?.ville || 'N/A'}</td>
+                <td class="text-center">${stat.nbPartiesJouees}</td>
+                <td class="text-center"><span class="badge bg-success">${stat.nbVictoires}</span></td>
+                <td class="text-center"><span class="badge bg-danger">${stat.nbDefaites}</span></td>
+                <td class="text-center"><span class="badge bg-warning text-dark">${stat.nbDefProlo}</span></td>
+                <td class="text-center">${stat.nbButsPour}</td>
+                <td class="text-center">${stat.nbButsContre}</td>
+                <td class="text-center ${diffClass}"><strong>${stat.differentielButs > 0 ? '+' : ''}${stat.differentielButs}</strong></td>
+                <td class="text-center"><strong class="text-primary fs-5">${stat.points}</strong></td>
+            </tr>
+        `;
+    });
+
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-info-circle me-2"></i>Légende:</strong><br>
+                    PJ = Parties Jouées | V = Victoires | D = Défaites | DP = Défaites en Prolongation/Fusillade<br>
+                    BP = Buts Pour | BC = Buts Contre | Diff = Différentiel | PTS = Points (V=2pts, DP=1pt)
+                </div>
+            </div>
+        </div>
+    `;
+
+    tableauStats.innerHTML = html;
+}
+
+// Modifier le DOMContentLoaded existant pour ajouter les event listeners de navigation
 document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter les event listeners pour la navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const href = this.getAttribute('href');
+            const section = href.substring(1); // Enlever le #
+            naviguerVers(section);
+        });
+    });
+
+    // Afficher la section équipes par défaut
+    naviguerVers('equipes');
+
     setTimeout(() => {
         // Charger les divisions au démarrage
         chargerDivisions().then(() => {
@@ -637,6 +872,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Event listeners pour les filtres
                 document.getElementById('searchInput').addEventListener('input', filtrerEquipes);
                 document.getElementById('divisionFilter').addEventListener('change', filtrerEquipes);
+                ajouterEquipeBecameTeam(0);
             }).catch((error) => {
                 alert(error);
             });
