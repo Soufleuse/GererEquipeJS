@@ -6,7 +6,5 @@ services:
     container_name: GererEquipeJs
     ports:
       - "12080:12080"
-      - "5245:5245"
-      - "14331:1433"
     restart: unless-stopped
   
