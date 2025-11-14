@@ -3,3 +3,6 @@ mysql_data/*
 
 #... sauf son README.md - voir le pourquoi dans ce fichier.
 !mysql_data/README.md
+
+src/environnement/*
+!src/environnement/.gitkeep
