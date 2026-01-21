@@ -4,7 +4,7 @@ let toutesLesDivisions = [];
 let equipesAffichees = [];
 let currentPage = 1;
 const itemsPerPage = 10;
-const apiBaseUrl = "http://localhost:5246/api/";
+const apiBaseUrl = "http://localhost:5245/api/";
 
 // Variable globale pour les stats
 let statsEquipes = [];
