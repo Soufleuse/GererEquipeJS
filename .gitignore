@@ -6,3 +6,5 @@ mysql_data/*
 
 src/environnement/*
 !src/environnement/.gitkeep
+
+src/json/
