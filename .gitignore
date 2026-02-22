@@ -8,3 +8,7 @@ mysql_data/*
 *-bck.*
 *.bck
 .env_dev
+src/environnement/*
+!src/environnement/.gitkeep
+
+src/json/
