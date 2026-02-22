@@ -4,6 +4,10 @@ mysql_data/*
 #... sauf son README.md - voir le pourquoi dans ce fichier.
 !mysql_data/README.md
 
+# Ne pas suivre certains fichiers backup
+*-bck.*
+*.bck
+.env_dev
 src/environnement/*
 !src/environnement/.gitkeep
 

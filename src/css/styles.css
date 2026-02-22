@@ -1,412 +1,164 @@
-/* ------------ GÉNÉRAL ------------ */
-
-html, body { 
-	font: 12px 
-	Verdana, sans-serif; 
-	color: #000; 
-	height: 100%;
-}
-a { 
-	color: #eee; 
-}
-a:hover { 
-	color: white; 
-	text-decoration: none;
-}
-h2 {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 1.7em;
-	border-bottom: 1px dashed;
-	color: #007f63;
-	margin: 20px 0px 0px 0px;
-	text-transform: uppercase;
-	width: 100%;
-}
-h2 span {
-	font-weight: 500;
-}
-h3 {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 500;
-	font-size: 1.4em;
-	color: #007f63;
-	margin-top: 15px;
-	margin-bottom: 10px;
-}
-h4 {
-	font-family: 'Roboto', sans-serif;
-	font-size: 1.2em;
-	color: #007f63;
-	margin-bottom: 5px;
-}
-select {
-	outline: 0;
-	border: 1px solid #9b908a;
-	width: 370px;
-	padding: 4px 4px 4px 10px;
-	color: #FFF;
-	border-radius: 5px;
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#38332f', endColorstr='#110f0d',GradientType=0 ); /* IE6-9 */
-	background-color: #006a57;
-	background-repeat: no-repeat, repeat;
-	background-position: 99% 0%, top left;
-}
-select[disabled] { 
-	color: #CCC;
-}
-input[disabled] {
-	color: #CCC !important;
-}
-select option, select optgroup {
-	background: #1294cf;
-}
-#effacer, #soumission {
-	width: 146px;
-	text-transform: uppercase;
-	margin-right: 10px;
-	border: 1px solid #9b908a;
-	float: left;
-	padding: 4px;
-	color: #FFF;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	background: #38332f; /* Old browsers */
-	background: -moz-linear-gradient(top,  #38332f 0%, #4d4844 51%, #110f0d 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#38332f), color-stop(51%,#4d4844), color-stop(100%,#110f0d)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #38332f 0%,#4d4844 51%,#110f0d 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #38332f 0%,#4d4844 51%,#110f0d 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  #38332f 0%,#4d4844 51%,#110f0d 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  #38332f 0%,#4d4844 51%,#110f0d 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#38332f', endColorstr='#110f0d',GradientType=0 ); /* IE6-9 */
+:root {
+	--hockey-blue: #1e3a8a;
+	--hockey-red: #dc2626;
+	--hockey-ice: #f8fafc;
+	--hockey-dark: #1f2937;
 }
 
-/* ------------ ENTÊTE ------------ */
-
-#conteneur-piv {
-	width: 100%;
-	height: 100px;
-	background: #FFF;
-	padding-bottom: 5px;
-}
-#entete { 
-	height: 80px; 
-	position: relative; 
-	top: 0;
-	border-bottom: 3px solid #c8cd1c; 
-	border-top: 3px solid #c8cd1c; 
-	width: 100%; 
-}
-#conteneur-entete {
-	width: 960px;
-	margin: 0 auto;
-	height: 80px;
-	position: relative;
-	z-index: 222;
-}
-#conteneur-entete #logo a {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-.conteneur-nav { 
-	position: absolute;
-	font-family: 'Roboto', sans-serif;
-	right: 0;
-	z-index: 111;
-	width: 960px;
-	height: 45px;
+body {
+	background: linear-gradient(135deg, var(--hockey-ice) 0%, #e2e8f0 100%);
+	min-height: 100vh;
 }
 
-/* Clearfix */
-.groupe:after { 
-	visibility: hidden; 
-	display: block; 
-	content: ""; 
-	clear: both; 
-	height: 0; 
-}
-*:first-child+html .groupe { 
-	zoom: 1; 
+.main-header {
+	background: white;
+	border-radius: 15px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	margin-bottom: 2rem;
+	padding: 2rem;
+	border-left: 5px solid var(--hockey-red);
 }
 
-#nav { 
-	list-style: none; 
-	position: relative; 
-	float: left;
-	width: 960px;
-	margin-left: 5px;
-	font-style: italic;
-}
-#nav li { 
-	display: inline;
-}
-#nav a { 
-	color: #bbb; 
-	font-size: 12px; 
-	float: left;
-	padding: 11px 13px 13px 13px;
-	text-decoration: none;
+.stats-card {
+	background: white;
+	border-radius: 10px;
+	padding: 1.5rem;
 	text-align: center;
-}
-#nav a:hover { 
-	color: white; 
-}
-.current_page_item a { 
-	color: white !important; 
-}
-.ie6 #nav li, .ie7 #nav li { 
-	display: inline; 
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s, box-shadow 0.2s;
+	border-top: 3px solid var(--hockey-blue);
 }
 
-/* ------------ CONTENU ------------ */
-
-#wrap {
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
-	margin: 0 auto -203px; /* the bottom margin is the negative value of the footer's height */
-	background-color: #f1f1f1;
-}
-#contenu {
-	width: 960px;
-	height: 100%;
-	margin: 0 auto;
-}
-#contenu .col-gauche {
-	width: 960px;
-	float: left;
-}
-#contenu .col-gauche .intro {
-	margin-bottom: 12px;
-}
-#contenu .col-gauche p.lien {
-	line-height: 1.7em;
-}
-#contenu a {
-	color: #000;
-}
-#contenu .dernier {
-	margin-bottom: 15px;
-}
-#contenu .col-1 {
-	width: 100%;
-	padding-bottom: 15px;
-	border-bottom: 1px dashed #007f63;
-}
-#contenu .col-3 {
-	width: 100%;
-	border-bottom: 1px dashed #007f63;
-}
-#contenu .col-3 select {
-	margin-bottom: 3px;
-}
-#contenu .col-3 div {
-	width: 312px;
-	float: left;
-	padding-left: 10px;
-	padding-bottom: 15px;
-}
-#contenu .col-3 div.premier {
-	border-right: 1px dashed #007f63;
-	padding-left: 0px;
-}
-#contenu .col-3 div.dernier {
-	border-left: 1px dashed #007f63;
-}
-#contenu .col-3 div select {
-	width: 370px;
-}
-#contenu #affichage {
-	width: 100%;
-	float: left;
-}
-#contenu .conteneur-arbre {
-	float: left;
-	width: 100%;
-}
-#conteneur-boite div.boite:nth-child(4n+4) {
-	margin-right: 0px;
-}
-#contenu .boite {
-	width: 500px;
-	float: left;
-	margin-right: 20px;
-	margin-bottom: 15px;
-	padding-bottom: 3px;
-	background: #c6e1d9;
-	min-height: 300px;
-}
-#contenu .boite .titre {
-	font-family: 'Roboto', sans-serif;
-	font-size: 1.2em;
-	color: #FFF;
-	padding: 7px;
-	margin-bottom: 3px;
-	background: #006a57;
-}
-#contenu .boite ul li a {
-	display: block;
-	padding: 4px 4px 4px 7px;
-	color: #1a1715;
-}
-#contenu .boite ul li a:hover {
-	background: #d7ede6;
-	/*color: #fff;*/
-}
-#contenu #resultats ul {
-	list-style-type: disc;
-	width: 660px;
-	color: #006a57;
-	margin: 10px 0px 0px 20px;
-}
-#contenu #resultats ul li {
-	float: left;
-	width: 650px;
-}
-#contenu #resultats ul li a {
-	color: #006a57;
-	display: block;
-	padding: 4px;
-}
-#contenu #resultats ul li a:hover {
-	background: #c6e1d9;
-}
-#contenu .bas {
-	margin-top: 15px !important;
-}
-#contenu #telechargement {
-	width: 100%;
-	text-align: right;
-	float: right;
-	margin-bottom: 15px;
-}
-#contenu #telechargement #texte {
-	width: 150px;
-	float: right;
-	color: #1c7362;
-	padding-top: 10px;
-}
-#contenu #telechargement #icones {
-	width: 70px;
-	float: right;
-}
-#contenu ul#plan {
-	margin-top: 15px;
-	line-height: 1.5em;
-	list-style: disc;
-	list-style-position: inside;
-}
-#contenu ul#plan li a {
-	color: #000;
-}
-#contenu p.fil {
-	margin-top: 3px;
-	color: #007f63;
-}
-#contenu p.fil a {
-	color: #007f63;
+.stats-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* ------------ PIED DE PAGE ------------ */
-
-#piedpage {
-	position: relative;
-	width: 100%;
-	border-top: 3px solid #c8cd1c;
-	height: 200px;
-}
-#piedpage, .push {
-	height: 200px;
-	clear: both;
-}
-#conteneur-piedpage {
-	position: relative;
-	z-index: 999;
-	width: 960px;
-	z-index: 100;
-	margin: 0 auto;
-	height: 200px;
-}
-#conteneur-piedpage ul {
-	font-family: 'Roboto', sans-serif;
-	float: left;
-	margin-top: 12px;
-	list-style-type: none;
-	width: 900px;
-}
-#conteneur-piedpage ul li {
-	color: #bbb;
-	display: block;
-	float: left;
-	padding: 0px 16px 2px 16px;
-	border-right: 1px solid;
+.stats-number {
+	font-size: 2.5rem;
+	font-weight: bold;
+	color: var(--hockey-blue);
 }
 
-#conteneur-piedpage ul li a {
-	font-style: italic;
-	text-decoration: none;
-	color: #bbb; 
-}
-#conteneur-piedpage #logos img.image2{
-	float: right;
-}
-div.erreur {
-	margin-top: 20px;
-	padding: 12px 12px 12px 55px;
-	border: 1px solid #860000;
-	color: #860000;
-	width: 565px;
+.team-table {
+	background: white;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* ------------ TABLEAU ------------ */
+.table thead th {
+	background: var(--hockey-blue);
+	color: white;
+	border: none;
+	font-weight: 600;
+	padding: 1rem;
+}
 
-#conteneurTableau, #conteneurReferences  {
-    position: relative;
-    clear: both;
-    padding-bottom: 20px;
+.table tbody tr {
+	transition: background-color 0.2s;
 }
-#conteneurTableau .scrollTop {
-    position: absolute;
-    width: 30px;
-    top: 0px; right: -35px;
+
+.table tbody tr:hover {
+	background-color: var(--hockey-ice);
 }
-#conteneurReferences .scrollTop {
-    position: absolute;
-    width: 30px;
-    top: 25px; right: -35px;
+
+.btn-hockey-primary {
+	background: linear-gradient(135deg, var(--hockey-blue) 0%, #1e40af 100%);
+	border: none;
+	padding: 0.5rem 1.5rem;
+	font-weight: 600;
+	transition: all 0.2s;
+	color: #d1fae5;
 }
-#conteneurTableau .scrollBottom, #conteneurReferences .scrollBottom {
-    position: absolute;
-    width: 30px;
-    bottom: 15px; right: -35px;
+
+.btn-hockey-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-table {
-    margin-top: 15px;
+
+.btn-hockey-success {
+	background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+	border: none;
+	color: white;
 }
-table h1, table h2, table h3 {
-    text-transform: uppercase;
-    border: 0px;
-    color: #FFF;
-    margin: 7px !important;
+
+.btn-hockey-danger {
+	background: linear-gradient(135deg, var(--hockey-red) 0%, #ef4444 100%);
+	border: none;
+	color: white;
 }
-table h1 {
-    font-size: 1.5em;
-    font-weight: 300;
+
+.form-container {
+	background: white;
+	border-radius: 15px;
+	padding: 2rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	border-left: 5px solid var(--hockey-blue);
 }
-table h2 {
-    font-size: 1.4em;
-    font-weight: 400;
+
+.form-control:focus {
+	border-color: var(--hockey-blue);
+	box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
 }
-table h3 {
-    text-transform: none;
-    font-size: 1em;
+
+.division-badge {
+	padding: 0.25rem 0.75rem;
+	border-radius: 20px;
+	font-size: 0.875rem;
+	font-weight: 600;
 }
-th {
-    text-align: left;
+
+.division-atlantique { background-color: #dbeafe; color: #1e40af; }
+.division-Metro { background-color: #fecaca; color: #dc2626; }
+.division-central { background-color: #d1fae5; color: #059669; }
+.division-pacifique { background-color: #d1fae5; color: #eeb332; }
+
+.action-buttons .btn {
+	margin: 0 0.25rem;
 }
-td ul {
-    list-style-type: disc;
-    list-style-position: inside;
+
+.page-title {
+	color: var(--hockey-dark);
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+	color: #64748b;
+	font-size: 1.1rem;
+}
+
+.loading {
+	display: none;
+	text-align: center;
+	padding: 2rem;
+}
+
+.error-message {
+	background-color: #fef2f2;
+	border: 1px solid #fecaca;
+	color: #dc2626;
+	padding: 1rem;
+	border-radius: 8px;
+	margin: 1rem 0;
+	display: none;
+}
+
+.navbar-dark {
+	background-color: var(--hockey-blue);
+}
+
+.navbar-brand {
+	font-weight: 700;
+	font-size: 1.5rem;
+}
+
+.nav-link {
+	font-weight: 500;
+	transition: color 0.2s;
+}
+
+.nav-link:hover {
+	color: #d1fae5 !important;
 }
