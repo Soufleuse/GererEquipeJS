@@ -7,7 +7,7 @@ services:
     ports:
       - "14330:1433"   # SQL Server
       - "5245:5245"    # API .NET
-      - "12180:12180"  # Nginx
+      - "12180:12080"  # Nginx
     volumes:
       - ../../c#/ServiceLigueHockeySqlServer/sqlserver-data:/var/opt/mssql
     env_file:
