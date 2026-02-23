@@ -214,33 +214,35 @@ async function chargerDivisions() {
     montrerChargementDivisions(true);
     hideError();
     
-    listerDivision().then((mesDivisions) => {
+    try {
+        const mesDivisions = listerDivision();
         toutesLesDivisions = mesDivisions;
         afficherDivision();
-    }).catch((error) => {
+    } catch (error) {
         showError('Erreur lors du chargement des divisions: ' + error.message);
-    }).finally(() => {
+    } finally {
         montrerChargementDivisions(false);
-    });
+    };
 }
 
 async function chargerEquipes() {
     montrerChargementEquipes(true);
     hideError();
     
-    getListeEquipe().then((mesEquipes) => {
+    try {
+        const mesEquipes = getListeEquipe();
         toutesLesEquipes = mesEquipes;
         equipesAffichees = [...toutesLesEquipes];
         mettreAJourStatistiques();
         afficherEquipes();
         currentPage = 1;
         mettreAJourPagination();
-    }).catch((error) => {
+    } catch(error) {
         console.log(error);
         showError('Erreur lors du chargement des équipes: ' + error.message);
-    }).finally(() => {
+    } finally {
         montrerChargementEquipes(false);
-    })
+    }
 }
 
 function mettreAJourStatistiques() {
@@ -642,6 +644,7 @@ async function ajouterEquipe() {
     }
 
     getDernierNumeroEquipe().then((resultat) => {
+            console.log('Resultat : ' + resultat);
             nouvelleEquipe.id = resultat;
             return ajoutEquipe(nouvelleEquipe);
         }).then(() => {

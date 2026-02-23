@@ -34,7 +34,7 @@ RUN mkdir -p /app /var/www/html /usr/local/share/ca-certificates /var/log/superv
 COPY --from=build /app/publish /app/
 
 # Copier les fichiers web JavaScript
-COPY js/GererEquipeJS/ /var/www/html/
+COPY js/GererEquipeJS/src /var/www/html/
 
 # Copier les certificats (si présents)
 COPY js/GererEquipeJS/certificats/*.crt /usr/local/share/ca-certificates/
